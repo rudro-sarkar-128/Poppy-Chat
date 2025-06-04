@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head.ejs") %>
+
+        <title>Conversation with <%= receiver %>
+        </title>
+</head>
+
+<body>
+
+    <div class="bg-white">
+        <div class="h-screen w-screen flex overflow-hidden">
+            <!-- Sidebar -->
+            <%- include("../partials/sidebar.ejs") %>
+            <!-- Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Navbar -->
+                <div class="bg-white shadow">
+                    <div class="container mx-auto">
+                        <div class="flex justify-between items-center py-4 px-2">
+                            <button class="text-gray-500 hover:text-gray-600" id="open-sidebar">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            <div class="w-2/6 flex justify-end items-center">
+                                <div class="flex  justify-around items-center w-32 h-8">
+                                    <img class="w-7 h-7 rounded-full" src="/resources/profile_pic.jpg">
+                                    <h1 class="font-semibold">
+                                        <%= data.username %>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Body -->
+                <div class="flex-1 overflow-auto p-4">
+
+
+                    <!-- Inbox Content -->
+                    <div class="flex flex-col h-full overflow-y-auto">
+                        <!-- Conversation Title/Header -->
+                        <div class="bg-gray-100 px-4 py-3 border-b">
+                            <div class="flex items-center">
+                                <img src="/resources/profile_pic.jpg" alt="Receiver Avatar"
+                                    class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-semibold text-gray-800">
+                                    <%= receiver %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div class="px-4 py-4 flex-1 overflow-y-auto main_msgs_container" id="msg_container">
+
+                            <!-- msgs -->
+
+                        </div>
+
+                        <!-- Message Input Area -->
+                        <div class="bg-gray-100 px-4 py-3 flex items-center">
+                            <input id="msgInput" type="text" placeholder="Type a message..."
+                                class="w-full bg-white border rounded-full px-4 py-2 focus:outline-none">
+                            <button id="msgSend"
+                                class="ml-4 bg-gray-800 hover:bg-gray-600 text-white px-4 py-2 rounded-full">Send</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <%- include("../partials/gsp_client.ejs") %>
+
+        <script>
+            const msp_socket = io('/messaging', {
+                auth: {
+                    senderId: "<%= data.poppy_id %>"
+                }
+            });
+
+            const sidebar = document.getElementById('sidebar');
+            const openSidebarButton = document.getElementById('open-sidebar');
+
+            const msgInput = document.getElementById("msgInput");
+            const msgSend = document.getElementById("msgSend");
+
+            const sendMsgToOtherEnd = (msg) => {
+                msgInput.setAttribute('readonly', true);
+                msgInput.placeholder = 'Wait a second before sending again';
+                setTimeout(() => {
+                    if (msg) {
+                    msp_socket.emit('new_msg', {
+                        body: msg,
+                        receiver: "<%= receiver %>"
+                    });
+                    let msgBox = document.createElement('div');
+                    msgBox.classList.add('flex', 'justify-end', 'mb-4');
+
+                    let text = document.createElement('div');
+                    text.classList.add('bg-gray-800', 'text-white', 'px-4', 'py-2', 'rounded-lg', 'max-w-xs', 'break-words');
+                    text.innerText = msg;
+
+                    msgBox.appendChild(text);
+                    msg_container.appendChild(msgBox);
+
+                    let main_msgs_container = document.querySelector(".main_msgs_container");
+                    main_msgs_container.scrollTop = main_msgs_container.scrollHeight;
+
+                    msgInput.removeAttribute('readonly', true);
+                    msgInput.placeholder = 'Type a message...';
+                    msgInput.focus();
+
+                }
+                }, 1250);
+            }
+
+            const clientReceiveMsg = (content) => {
+                let msgBox = document.createElement('div');
+                msgBox.classList.add('flex', 'justify-start', 'mb-4');
+
+                let msg = document.createElement('div');
+                msg.classList.add('bg-gray-200', 'text-black', 'px-4', 'py-2', 'rounded-lg', 'max-w-xs', 'break-words');
+                msg.innerText = content;
+
+                msgBox.appendChild(msg);
+                msg_container.appendChild(msgBox);
+
+                let main_msgs_container = document.querySelector(".main_msgs_container");
+                main_msgs_container.scrollTop = main_msgs_container.scrollHeight;
+            }
+
+            window.addEventListener('load', () => {
+                msp_socket.emit('load_messages', {
+                    receiver: "<%= receiver %>",
+                    sender: "<%= data.poppy_id %>"
+                });
+            });
+
+            msp_socket.on('msg_loaded', data_array => {
+                data_array.forEach(chat => {
+                    if (chat.sender == "<%= data.poppy_id %>") {
+                        let msgBox = document.createElement('div');
+                        msgBox.classList.add('flex', 'justify-end', 'mb-4');
+
+                        let text = document.createElement('div');
+                        text.classList.add('bg-gray-800', 'text-white', 'px-4', 'py-2', 'rounded-lg', 'max-w-xs', 'break-words');
+                        text.innerText = chat.content;
+
+                        msgBox.appendChild(text);
+                        msg_container.appendChild(msgBox);
+
+                        let main_msgs_container = document.querySelector(".main_msgs_container");
+                        main_msgs_container.scrollTop = main_msgs_container.scrollHeight;
+                    } else {
+                        clientReceiveMsg(chat.content);
+                    }
+                });
+            });
+
+            openSidebarButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && !openSidebarButton.contains(e.target)) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+
+            msp_socket.emit('initiate_conversation', "<%= receiver %>");
+
+            msgSend.addEventListener('click', () => {
+                let msg = msgInput.value.trim();
+                sendMsgToOtherEnd(msg);
+                msgInput.value = "";
+            });
+            msgInput.addEventListener('keyup', e => {
+                if (e.keyCode === 13 && e.shiftKey === false) {
+                    let msg = msgInput.value.trim();
+                    sendMsgToOtherEnd(msg);
+                    msgInput.value = "";
+                }
+            });
+
+            const msg_container = document.getElementById("msg_container");
+
+            msp_socket.on('msg_arrive', data => {
+                let content = data.body;
+                clientReceiveMsg(content);
+            });
+
+
+        </script>
+
+</body>
+
+</html>

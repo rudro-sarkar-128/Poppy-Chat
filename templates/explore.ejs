@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head.ejs") %>
+
+        <title>Explore | <%= data.username %>
+        </title>
+</head>
+
+<body>
+
+    <div class="bg-gray-100">
+
+        <div class="h-screen w-screen flex overflow-hidden bg-gray-200">
+            <!-- Sidebar -->
+            <%- include("../partials/sidebar.ejs") %>
+            <!-- Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Navbar -->
+                <div class="bg-white shadow">
+                    <div class="container mx-auto">
+                        <div class="flex justify-between items-center py-4 px-2">
+                            <button class="text-gray-500 hover:text-gray-600" id="open-sidebar">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            <div class="w-2/6 flex justify-end items-center">
+                                <form action="" method="post" id="poppy_search_form">
+                                    <input id="poppy_search_input" name="poppy_search"
+                                        class="mx-4 w-50 border rounded-md px-4 py-2" type="text"
+                                        placeholder="Search using poppy id">
+                                </form>
+                                <span><i id="search_submit_icon"
+                                        class="fa-solid fa-magnifying-glass cursor-pointer"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Content Body -->
+                <div class="flex-1 overflow-auto p-4">
+
+                    <div class="h-screen bg-gray-200 pt-12">
+
+                        <!-- Profile card -->
+                        <% if(info=='' ){ %>
+                            <div id="search_poppy_id_div"
+                                class="max-w-sm mx-auto bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer hover:bg-gray-100">
+                                <div class="border-b px-4 pb-6">
+                                    <div class="text-center my-4">
+                                        <div class="py-2">
+                                            <div class="inline-flex text-gray-700 items-center">
+                                                Search for users using Poppy ID
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } else{ %>
+                                <div id="search_poppy_id_div" class="max-w-sm mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
+                                    <div class="border-b px-4 pb-6">
+                                        <div class="text-center my-4">
+                                            <div class="py-2">
+                                                <div class="inline-flex text-gray-700 items-center">
+                                                    Invalid Poppy ID !
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                        <!-- Profile card end -->
+                                </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <script>
+            const sidebar = document.getElementById('sidebar');
+            const openSidebarButton = document.getElementById('open-sidebar');
+
+            openSidebarButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && !openSidebarButton.contains(e.target)) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+
+            const poppy_search_input = document.getElementById("poppy_search_input");
+            const search_poppy_id_div = document.getElementById("search_poppy_id_div");
+
+            if (search_poppy_id_div) {
+                search_poppy_id_div.addEventListener('click', () => {
+                    poppy_search_input.focus();
+                });
+            }
+
+            const poppy_search_form = document.getElementById("poppy_search_form");
+            const search_submit_icon = document.getElementById("search_submit_icon");
+
+            if (search_submit_icon) {
+                search_submit_icon.addEventListener('click', () => {
+                    poppy_search_form.submit();
+                });
+            }
+
+
+        </script>
+        <%- include("../partials/gsp_client.ejs") %>
+
+</body>
+
+</html>

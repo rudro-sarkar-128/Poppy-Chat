@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head.ejs") %>
+
+        <title>User Profile | <%= data_for_client.username %>
+        </title>
+</head>
+
+<body>
+
+    <div class="bg-gray-100">
+
+        <div class="h-screen w-screen flex overflow-hidden bg-gray-200">
+            <!-- Sidebar -->
+            <%- include("../partials/sidebar.ejs") %>
+            <!-- Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Navbar -->
+                <div class="bg-white shadow">
+                    <div class="container mx-auto">
+                        <div class="flex justify-between items-center py-4 px-2">
+                            <button class="text-gray-500 hover:text-gray-600" id="open-sidebar">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            <div class="w-2/6 flex justify-end items-center">
+                                <form action="" method="post" id="poppy_search_form">
+                                    <input id="poppy_search_input" name="poppy_search"
+                                        class="mx-4 w-50 border rounded-md px-4 py-2" type="text"
+                                        placeholder="Search using poppy id">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Content Body -->
+                <div class="flex-1 overflow-auto p-4">
+
+                    <div class="h-screen bg-gray-200 pt-12">
+
+                        <!-- Profile card -->
+                            <div
+                                class="max-w-sm mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
+                                <div class="border-b px-4 pb-6">
+                                    <div class="text-center my-4">
+                                        <img class="h-32 w-32 rounded-full border-4 border-white mx-auto my-4"
+                                            src="/resources/profile_pic.jpg" alt="">
+                                        <div class="py-2">
+                                            <h3 class="font-bold text-2xl text-gray-800 mb-1">
+                                                <%= data_for_client.username %>
+                                            </h3>
+                                            <div class="inline-flex text-gray-700 items-center">
+                                                <i class="fa-solid fa-user"></i>&nbsp;
+                                                <%= data_for_client.poppy_id %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <form id="confirmFriendForm" action="/confirmrequest/<%= data_for_client.poppy_id %>" method="post"></form>
+                                    <form id="declineFriendForm" action="/declinerequest/<%= data_for_client.poppy_id %>" method="post"></form>
+                                    <div class="flex gap-2 px-2">
+                                        <button id="confirmFriendFormBtn"
+                                            class="flex-1 rounded-full bg-gray-700 text-white antialiased font-bold hover:bg-gray-600 px-4 py-2">
+                                            Accept
+                                        </button>
+                                        <button id="declineFriendFormBtn"
+                                            class="flex-1 rounded-full bg-red-500 text-white antialiased font-bold hover:bg-red-400 px-4 py-2">
+                                            Decline
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-4">
+                                    <div class="flex gap-2 items-center text-gray-800 mb-4">
+                                        <svg class="h-6 w-6 text-gray-600" fill="currentColor"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
+                                            height="24">
+                                            <path class=""
+                                                d="M12 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm9 11a1 1 0 0 1-2 0v-2a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3v2a1 1 0 0 1-2 0v-2a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v2z" />
+                                        </svg>
+                                        <span><strong class="text-black">
+                                            </strong>
+                                           <%= data_for_client.friends_count %> Poppy Friends</span>
+                                    </div>
+                                </div>
+                            </div
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarButton = document.getElementById('open-sidebar');
+
+        openSidebarButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !openSidebarButton.contains(e.target)) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+        const confirmFriendForm = document.getElementById("confirmFriendForm");
+        const declineFriendForm = document.getElementById("declineFriendForm");
+
+        const confirmFriendFormBtn = document.getElementById("confirmFriendFormBtn");
+        const declineFriendFormBtn = document.getElementById("declineFriendFormBtn");
+
+        confirmFriendFormBtn.addEventListener('click', e => {
+            e.preventDefault();
+            confirmFriendForm.submit();
+        });
+
+        declineFriendFormBtn.addEventListener('click', e => {
+            e.preventDefault();
+            declineFriendForm.submit();
+        });
+
+    </script>
+    <%- include("../partials/gsp_client.ejs") %>
+
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head.ejs") %>
+
+        <title>Explore | <%= data.username %>
+        </title>
+</head>
+
+<body>
+
+    <div class="bg-gray-100">
+
+        <div class="h-screen w-screen flex overflow-hidden bg-gray-200">
+            <!-- Sidebar -->
+            <%- include("../partials/sidebar.ejs") %>
+            <!-- Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Navbar -->
+                <div class="bg-white shadow">
+                    <div class="container mx-auto">
+                        <div class="flex justify-between items-center py-4 px-2">
+                            <button class="text-gray-500 hover:text-gray-600" id="open-sidebar">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            <div class="w-2/6 flex justify-end items-center">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Content Body -->
+                <div class="flex-1 overflow-auto p-4">
+
+                    <div class="h-screen bg-gray-200 pt-12">
+
+                        <!-- Profile card -->
+                        <% if(find_err=='alreadyFrnd' ){ %>
+                            <div
+                                class="max-w-sm mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
+                                <div class="border-b px-4 pb-6">
+                                    <div class="text-center my-4">
+                                        <div class="py-2">
+                                            <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+                                                The user is already in your friend list
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 px-2">
+                                            <a href="/explore"
+                                                class="flex-1 rounded-full bg-gray-800 text-white antialiased font-bold hover:bg-gray-600 px-4 py-2">
+                                                Go Back
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <% } if (find_err=='alreadyRequested' ){ %>
+                        <div class="max-w-sm mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
+                            <div class="border-b px-4 pb-6">
+                                <div class="text-center my-4">
+                                    <div class="py-2">
+                                        <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+                                            You have already sent a request !
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2 px-2">
+                                        <a href="/explore"
+                                            class="flex-1 rounded-full bg-gray-800 text-white antialiased font-bold hover:bg-gray-600 px-4 py-2">
+                                            Go Back
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                            <% if (find_err=='noerror' ){ %>
+                                <div
+                                    class="max-w-sm mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
+                                    <div class="border-b px-4 pb-6">
+                                        <div class="text-center my-4">
+                                            <div class="py-2">
+                                                <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+                                                    Friend request sent
+                                                </div>
+                                            </div>
+                                            <div class="flex gap-2 px-2">
+                                                <a href="/explore"
+                                                    class="flex-1 rounded-full bg-gray-800 text-white antialiased font-bold hover:bg-gray-600 px-4 py-2">
+                                                    Go Back
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <!-- Profile card end -->
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarButton = document.getElementById('open-sidebar');
+
+        openSidebarButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !openSidebarButton.contains(e.target)) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+    </script>
+    <%- include("../partials/gsp_client.ejs") %>
+
+</body>
+
+</html>
